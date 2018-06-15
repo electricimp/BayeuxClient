@@ -42,8 +42,8 @@ This callback is called every time the client is disconnected.
 
 The client is considered as disconnected if any of these events occurs:
 - disconnection was caused by application
-- transport is failed (e.g., request timeout, HTTP error)
-- the last "connect" message is unsuccessful and has no "reconnect" advice set to "retry"
+- sending of "connect" message is failed (e.g., request timeout, HTTP error)
+- the last "connect" message is unsuccessful (response's "successful" field is "false") and has no "reconnect" advice set to "retry"
 
 To learn what "connect" message is, please read the [Bayeux protocol specification](https://docs.cometd.org/current/reference/#_bayeux).
 
