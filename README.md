@@ -24,7 +24,7 @@ This method returns a new Bayeux.Client instance.
 | --- | --- | --- | --- |
 | [*configuration*](#configuration) | Table | Yes | Key-value table with settings. There are required and optional settings. |
 | [*onConnected*](#callback-onconnectederror) | Function | Optional | Callback called every time the client is connected. |
-| [*onDisconnected*](#callback-ondisconnectederror) | Function | Optional | Callback called every time the client is disconnected. |
+| [*onDisconnected*](#callback-ondisconnectedreason) | Function | Optional | Callback called every time the client is disconnected. |
 
 #### Callback: onConnected(*error*) ####
 
@@ -83,7 +83,7 @@ The method returns nothing. A result of the operation may be obtained via the [*
 
 This method closes the connection to the Bayeux server. Does nothing if the connection is already closed.
 
-The method returns nothing. When the disconnection is completed the [*onDisconnected*](#callback-ondisconnectederror) callback is called, if specified in the client's constructor or set by calling [setOnDisconnected()](#setondisconnectedcallback) method.
+The method returns nothing. When the disconnection is completed the [*onDisconnected*](#callback-ondisconnectedreason) callback is called, if specified in the client's constructor or set by calling [setOnDisconnected()](#setondisconnectedcallback) method.
 
 ### isConnected() ###
 
@@ -102,12 +102,12 @@ The method returns nothing. A result of the operation may be obtained via the [*
 | Parameter | Data Type | Required? | Description |
 | --- | --- | --- | --- |
 | *topic* | String  | Yes | The topic to subscribe to. |
-| *[handler](#callback-handlertopicmessage)* | Function  | Yes | Callback called every time a message with the *topic* is received. |
+| *[handler](#callback-handlertopic-message)* | Function  | Yes | Callback called every time a message with the *topic* is received. |
 | *[onDone](#callback-ondoneerror)* | Function  | Optional | Callback called when the operation is completed or an error occurs. |
 
 #### Callback: handler(*topic, message*) ####
 
-This callback is called every time a message with the topic specified in the [subscribe()](#subscribetopic-handler-onDone) is received.
+This callback is called every time a message with the topic specified in the [subscribe()](#subscribetopic-handler-ondone) is received.
 
 | Parameter | Data Type | Description |
 | --- | --- | --- |
@@ -159,7 +159,7 @@ This method sets [*onConnected*](#callback-onconnectederror) callback. The metho
 
 ### setOnDisconnected(*callback*) ###
 
-This method sets [*onDisconnected*](#callback-ondisconnectederror) callback. The method returns nothing.
+This method sets [*onDisconnected*](#callback-ondisconnectedreason) callback. The method returns nothing.
 
 ### setDebug(*value*) ###
 
