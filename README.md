@@ -136,7 +136,7 @@ The method returns nothing. A result of the operation may be obtained via the [*
 
 | Parameter | Data Type | Required? | Description |
 | --- | --- | --- | --- |
-| topic | String  | Yes | The topic to unsubscribe from. |
+| *topic* | String  | Yes | The topic to unsubscribe from. |
 | *[onDone](#callback-ondoneerror)* | Function  | Optional | Callback called when the operation is completed or an error occurs. |
 
 #### Callback: onDone(*error*) #####
