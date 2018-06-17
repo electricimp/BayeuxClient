@@ -50,8 +50,8 @@ class DummyTestCase extends ImpTestCase {
         return Promise(function (resolve, reject) {
             _bayeuxClient.subscribe(topic, handler, function (err) {
                 if (err != null && 
-                    err.type == BAYEUX_CLIENT_ERROR_TYPE.LIBRARY_ERROR &&
-                    err.details == BAYEUX_CLIENT_LIBRARY_ERROR_NOT_CONNECTED) {
+                    err.type == BC_ERROR_TYPE.LIBRARY_ERROR &&
+                    err.details == BC_LIBRARY_ERROR_NOT_CONNECTED) {
                     return resolve();
                 }
                 return reject("BAYEUX_CLIENT_LIBRARY_ERROR_NOT_CONNECTED error was expected!");
@@ -65,8 +65,8 @@ class DummyTestCase extends ImpTestCase {
         return Promise(function (resolve, reject) {
             _bayeuxClient.unsubscribe(topic, function (err) {
                 if (err != null && 
-                    err.type == BAYEUX_CLIENT_ERROR_TYPE.LIBRARY_ERROR &&
-                    err.details == BAYEUX_CLIENT_LIBRARY_ERROR_NOT_CONNECTED) {
+                    err.type == BC_ERROR_TYPE.LIBRARY_ERROR &&
+                    err.details == BC_LIBRARY_ERROR_NOT_CONNECTED) {
                     return resolve();
                 }
                 return reject("BAYEUX_CLIENT_LIBRARY_ERROR_NOT_CONNECTED error was expected!");
@@ -90,11 +90,11 @@ class DummyTestCase extends ImpTestCase {
     function _connect() {
         return Promise(function (resolve, reject) {
             _bayeuxClient.setOnConnected(function (err) {
-                if (err != null && err.type == BAYEUX_CLIENT_ERROR_TYPE.TRANSPORT_FAILED) {
+                if (err != null && err.type == BC_ERROR_TYPE.TRANSPORT_FAILED) {
                     return resolve();
                 }
                 return reject("TRANSPORT_FAILED error was expected!");
-                }.bindenv(this));
+            }.bindenv(this));
             _bayeuxClient.connect();
         }.bindenv(this));
     }

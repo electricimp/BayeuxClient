@@ -26,34 +26,17 @@
 // BayeuxClient is an Electric Imp agent-side library for interacting with Bayeux servers
 
 // BayeuxClient library error types
-enum BAYEUX_CLIENT_ERROR_TYPE {
+enum BC_ERROR_TYPE {
     LIBRARY_ERROR,
     TRANSPORT_FAILED,
     BAYEUX_ERROR
 }
 
 // Error codes for errors of LIBRARY_ERROR type
-const BAYEUX_CLIENT_LIBRARY_ERROR_NOT_CONNECTED         = 1;
-const BAYEUX_CLIENT_LIBRARY_ERROR_ALREADY_CONNECTED     = 2;
-const BAYEUX_CLIENT_LIBRARY_ERROR_OP_NOT_ALLOWED_NOW    = 3;
-const BAYEUX_CLIENT_LIBRARY_ERROR_NOT_SUBSCRIBED        = 4;
-
-// Library defaults
-const BAYEUX_CLIENT_DEFAULT_REQUEST_TIMEOUT             = 10;
-const BAYEUX_CLIENT_DEFAULT_ADVICE_TIMEOUT              = 60;
-const BAYEUX_CLIENT_DEFAULT_ADVICE_INTERVAL             = 0;
-const BAYEUX_CLIENT_DEFAULT_BACKOFF_INCREMENT           = 1;
-const BAYEUX_CLIENT_DEFAULT_BACKOFF_MAXIMUM             = 60;
-
-// Internal library constants
-const BAYEUX_CLIENT_PROTOCOL_VERSION                    = "1.0";
-const BAYEUX_CLIENT_LONGPOLL_TRANSPORT_NAME             = "long-polling";
-
-const BAYEUX_CLIENT_META_CHANNEL_HANDSHAKE              = "/meta/handshake";
-const BAYEUX_CLIENT_META_CHANNEL_CONNECT                = "/meta/connect";
-const BAYEUX_CLIENT_META_CHANNEL_DISCONNECT             = "/meta/disconnect";
-const BAYEUX_CLIENT_META_CHANNEL_SUBSCRIBE              = "/meta/subscribe";
-const BAYEUX_CLIENT_META_CHANNEL_UNSUBSCRIBE            = "/meta/unsubscribe";
+const BC_LIBRARY_ERROR_NOT_CONNECTED         = 1;
+const BC_LIBRARY_ERROR_ALREADY_CONNECTED     = 2;
+const BC_LIBRARY_ERROR_OP_NOT_ALLOWED_NOW    = 3;
+const BC_LIBRARY_ERROR_NOT_SUBSCRIBED        = 4;
 
 class Bayeux {
     static VERSION = "1.0.0";
@@ -72,6 +55,7 @@ class Bayeux.Client {
     _onDisconnectedCb       = null;
 
     _configuration          = null;
+    // It contains some useful information came from Bayeux server about what client should do
     _advice                 = null;
     _backoff                = 0;
     _curMsgId               = 1;
@@ -115,15 +99,32 @@ class Bayeux.Client {
     //
     // Returns:                         Bayeux.Client instance created.
     constructor(configuration, onConnected = null, onDisconnected = null) {
+        // Library defaults
+        const DEFAULT_REQUEST_TIMEOUT             = 10;
+        const DEFAULT_ADVICE_TIMEOUT              = 60;
+        const DEFAULT_ADVICE_INTERVAL             = 0;
+        const DEFAULT_BACKOFF_INCREMENT           = 1;
+        const DEFAULT_BACKOFF_MAXIMUM             = 60;
+
+        const PROTOCOL_VERSION                    = "1.0";
+        const LONGPOLL_TRANSPORT_NAME             = "long-polling";
+
+        const META_CHANNEL_HANDSHAKE              = "/meta/handshake";
+        const META_CHANNEL_CONNECT                = "/meta/connect";
+        const META_CHANNEL_DISCONNECT             = "/meta/disconnect";
+        const META_CHANNEL_SUBSCRIBE              = "/meta/subscribe";
+        const META_CHANNEL_UNSUBSCRIBE            = "/meta/unsubscribe";
+
+        // Indexes
         const REQUEST_INDEX = 0;
         const CALLBACK_INDEX = 1;
         const MESSAGE_INDEX = 1;
 
         _configuration = {
             "requestHeaders" : {},
-            "requestTimeout" : BAYEUX_CLIENT_DEFAULT_REQUEST_TIMEOUT,
-            "backoffIncrement" : BAYEUX_CLIENT_DEFAULT_BACKOFF_INCREMENT,
-            "maxBackoff" : BAYEUX_CLIENT_DEFAULT_BACKOFF_MAXIMUM
+            "requestTimeout" : DEFAULT_REQUEST_TIMEOUT,
+            "backoffIncrement" : DEFAULT_BACKOFF_INCREMENT,
+            "maxBackoff" : DEFAULT_BACKOFF_MAXIMUM
         }
         foreach (k, v in configuration) {
             _configuration[k] <- v;
@@ -140,8 +141,8 @@ class Bayeux.Client {
     // Returns:                         Nothing.
     function connect() {
         if (_isConnected || _isConnecting) {
-            local errorCode = _isConnected ? BAYEUX_CLIENT_LIBRARY_ERROR_ALREADY_CONNECTED : BAYEUX_CLIENT_LIBRARY_ERROR_OP_NOT_ALLOWED_NOW;
-            _onConnectedCb && _onConnectedCb(Bayeux.Error(BAYEUX_CLIENT_ERROR_TYPE.LIBRARY_ERROR, errorCode));
+            local errorCode = _isConnected ? BC_LIBRARY_ERROR_ALREADY_CONNECTED : BC_LIBRARY_ERROR_OP_NOT_ALLOWED_NOW;
+            _onConnectedCb && _onConnectedCb(Bayeux.Error(BC_ERROR_TYPE.LIBRARY_ERROR, errorCode));
             return;
         }
 
@@ -175,7 +176,7 @@ class Bayeux.Client {
         local message = {
             "id" : msgId,
             "clientId" : _clientId,
-            "channel" : BAYEUX_CLIENT_META_CHANNEL_DISCONNECT
+            "channel" : META_CHANNEL_DISCONNECT
         }
 
         local sent = function(error) {
@@ -186,7 +187,7 @@ class Bayeux.Client {
         // Cancel current request and send "disconnect" immediately
         if (_extraHttpRequest != null) {
             _extraHttpRequest[REQUEST_INDEX].cancel();
-            _extraHttpRequest[CALLBACK_INDEX](Bayeux.Error(BAYEUX_CLIENT_ERROR_TYPE.LIBRARY_ERROR, BAYEUX_CLIENT_LIBRARY_ERROR_OP_NOT_ALLOWED_NOW));
+            _extraHttpRequest[CALLBACK_INDEX](Bayeux.Error(BC_ERROR_TYPE.LIBRARY_ERROR, BC_LIBRARY_ERROR_OP_NOT_ALLOWED_NOW));
             _extraHttpRequest = null;   
         }
         _send(message, sent);
@@ -217,8 +218,8 @@ class Bayeux.Client {
     // Returns:                         Nothing.
     function subscribe(topic, handler, onDone = null) {
         if (!_isConnected || _isDisconnecting) {
-            local errorCode = _isConnected ? BAYEUX_CLIENT_LIBRARY_ERROR_OP_NOT_ALLOWED_NOW : BAYEUX_CLIENT_LIBRARY_ERROR_NOT_CONNECTED;
-            onDone && onDone(Bayeux.Error(BAYEUX_CLIENT_ERROR_TYPE.LIBRARY_ERROR, errorCode));
+            local errorCode = _isConnected ? BC_LIBRARY_ERROR_OP_NOT_ALLOWED_NOW : BC_LIBRARY_ERROR_NOT_CONNECTED;
+            onDone && onDone(Bayeux.Error(BC_ERROR_TYPE.LIBRARY_ERROR, errorCode));
             return;
         }
 
@@ -233,7 +234,7 @@ class Bayeux.Client {
         local message = {
             "id" : msgId,
             "clientId" : _clientId,
-            "channel" : BAYEUX_CLIENT_META_CHANNEL_SUBSCRIBE,
+            "channel" : META_CHANNEL_SUBSCRIBE,
             "subscription" : topic
         }
 
@@ -268,14 +269,14 @@ class Bayeux.Client {
     // Returns:                         Nothing.
     function unsubscribe(topic, onDone = null) {
         if (!_isConnected || _isDisconnecting) {
-            local errorCode = _isConnected ? BAYEUX_CLIENT_LIBRARY_ERROR_OP_NOT_ALLOWED_NOW : BAYEUX_CLIENT_LIBRARY_ERROR_NOT_CONNECTED;
-            onDone && onDone(Bayeux.Error(BAYEUX_CLIENT_ERROR_TYPE.LIBRARY_ERROR, errorCode));
+            local errorCode = _isConnected ? BC_LIBRARY_ERROR_OP_NOT_ALLOWED_NOW : BC_LIBRARY_ERROR_NOT_CONNECTED;
+            onDone && onDone(Bayeux.Error(BC_ERROR_TYPE.LIBRARY_ERROR, errorCode));
             return;
         }
 
         // Not subscribed
         if (!(topic in _userHandlers)) {
-            onDone && onDone(Bayeux.Error(BAYEUX_CLIENT_ERROR_TYPE.LIBRARY_ERROR, BAYEUX_CLIENT_LIBRARY_ERROR_NOT_SUBSCRIBED));
+            onDone && onDone(Bayeux.Error(BC_ERROR_TYPE.LIBRARY_ERROR, BC_LIBRARY_ERROR_NOT_SUBSCRIBED));
             return;
         }
 
@@ -283,7 +284,7 @@ class Bayeux.Client {
         local message = {
             "id" : msgId,
             "clientId" : _clientId,
-            "channel" : BAYEUX_CLIENT_META_CHANNEL_UNSUBSCRIBE,
+            "channel" : META_CHANNEL_UNSUBSCRIBE,
             "subscription" : topic
         }
 
@@ -352,8 +353,8 @@ class Bayeux.Client {
         }
 
         _advice = {
-            "timeout" : BAYEUX_CLIENT_DEFAULT_ADVICE_TIMEOUT * 1000,
-            "interval" : BAYEUX_CLIENT_DEFAULT_ADVICE_INTERVAL * 1000
+            "timeout" : DEFAULT_ADVICE_TIMEOUT * 1000,
+            "interval" : DEFAULT_ADVICE_INTERVAL * 1000
         }
         _userHandlers = {};
         _metaHandlers = {};
@@ -376,7 +377,7 @@ class Bayeux.Client {
             _log("Handling message:");
             _logTable(msg);
 
-            if ("id" in msg) {
+            if (msg["channel"].find("/meta/") == 0 && "id" in msg) {
                 local msgId = msg["id"];
                 if (msgId in _metaHandlers) {
                     local handler = delete _metaHandlers[msgId];
@@ -403,9 +404,9 @@ class Bayeux.Client {
                 _logError("Message does not have \"channel\" field!");
                 continue;
             }
-            if (msg["channel"].find(BAYEUX_CLIENT_META_CHANNEL_SUBSCRIBE) == 0) {
+            if (msg["channel"].find(META_CHANNEL_SUBSCRIBE) == 0) {
                 subscribes.append(msg);
-            } else if (msg["channel"].find(BAYEUX_CLIENT_META_CHANNEL_UNSUBSCRIBE) == 0) {
+            } else if (msg["channel"].find(META_CHANNEL_UNSUBSCRIBE) == 0) {
                 unsubscribes.append(msg);
             } else {
                 others.append(msg);
@@ -467,10 +468,10 @@ class Bayeux.Client {
         local msgId = _nextMessageId();
         local message = {
             "id" : msgId,
-            "version" : BAYEUX_CLIENT_PROTOCOL_VERSION,
-            "minimumVersion" : BAYEUX_CLIENT_PROTOCOL_VERSION,
-            "channel" : BAYEUX_CLIENT_META_CHANNEL_HANDSHAKE,
-            "supportedConnectionTypes" : [BAYEUX_CLIENT_LONGPOLL_TRANSPORT_NAME],
+            "version" : PROTOCOL_VERSION,
+            "minimumVersion" : PROTOCOL_VERSION,
+            "channel" : META_CHANNEL_HANDSHAKE,
+            "supportedConnectionTypes" : [LONGPOLL_TRANSPORT_NAME],
             "advice" : {
                 "timeout" : _advice.timeout,
                 "interval" : _advice.interval
@@ -524,9 +525,11 @@ class Bayeux.Client {
             errMsg = "Handshake was unsuccessful, but response does not have \"error\" field!";
             _logError(errMsg);
         }
-        callback(Bayeux.Error(BAYEUX_CLIENT_ERROR_TYPE.BAYEUX_ERROR, errMsg));
+        callback(Bayeux.Error(BC_ERROR_TYPE.BAYEUX_ERROR, errMsg));
     }
 
+    // establish = true, if we are establishing a new connection
+    // establish = false, if we are maintaining the established connection by sending a heartbeat message
     function _connect(establish = false) {
         _reconnectTimer = null;
 
@@ -534,8 +537,8 @@ class Bayeux.Client {
         local message = {
             "id" : msgId,
             "clientId" : _clientId,
-            "channel" : BAYEUX_CLIENT_META_CHANNEL_CONNECT,
-            "connectionType" : BAYEUX_CLIENT_LONGPOLL_TRANSPORT_NAME,
+            "channel" : META_CHANNEL_CONNECT,
+            "connectionType" : LONGPOLL_TRANSPORT_NAME,
             "advice" : {
                 "timeout" : establish ? 0 : _advice.timeout
             }
@@ -586,7 +589,8 @@ class Bayeux.Client {
 
         if (response["successful"]) {
             if (!_isDisconnecting) {
-                _delayedReconnect(_advice.interval);
+                // _advice.interval is in msecs, so we need to convert it to secs
+                _delayedReconnect(_advice.interval / 1000.0);
             }
             if (establish) {
                 callback(null);
@@ -602,8 +606,8 @@ class Bayeux.Client {
         if (reconnectAdvice == "retry") {
             // We can reconnect automatically
             if (!_isDisconnecting) {
-                // _backoff is in secs, so we need to convert it to msecs
-                _delayedReconnect(_advice.interval + _backoff * 1000, establish);
+                // _advice.interval is in msecs, so we need to convert it to secs
+                _delayedReconnect(_advice.interval / 1000.0 + _backoff, establish);
                 _increaseBackoff();
             }
             return;
@@ -611,9 +615,9 @@ class Bayeux.Client {
 
         // We can't reconnect automatically
         if ("error" in response) {
-            callback(Bayeux.Error(BAYEUX_CLIENT_ERROR_TYPE.BAYEUX_ERROR, response["error"]));
+            callback(Bayeux.Error(BC_ERROR_TYPE.BAYEUX_ERROR, response["error"]));
         } else {
-            callback(Bayeux.Error(BAYEUX_CLIENT_ERROR_TYPE.BAYEUX_ERROR,
+            callback(Bayeux.Error(BC_ERROR_TYPE.BAYEUX_ERROR,
                 "Connection failed, but response does not have \"error\" field!"));
         }
     }
@@ -622,6 +626,7 @@ class Bayeux.Client {
         _onConnectResponse(response, false);
     }
 
+    // delay in seconds
     function _delayedReconnect(delay, establish = false) {
         local reconnect = _connect;
         if (establish) {
@@ -645,9 +650,9 @@ class Bayeux.Client {
         }
 
         if ("error" in response) {
-            callback && callback(Bayeux.Error(BAYEUX_CLIENT_ERROR_TYPE.BAYEUX_ERROR, response["error"]));
+            callback && callback(Bayeux.Error(BC_ERROR_TYPE.BAYEUX_ERROR, response["error"]));
         } else {
-            callback && callback(Bayeux.Error(BAYEUX_CLIENT_ERROR_TYPE.BAYEUX_ERROR,
+            callback && callback(Bayeux.Error(BC_ERROR_TYPE.BAYEUX_ERROR,
                 "Subscription failed, but response does not have \"error\" field!"));
         }
     }
@@ -665,9 +670,9 @@ class Bayeux.Client {
         }
 
         if ("error" in response) {
-            callback && callback(Bayeux.Error(BAYEUX_CLIENT_ERROR_TYPE.BAYEUX_ERROR, response["error"]));
+            callback && callback(Bayeux.Error(BC_ERROR_TYPE.BAYEUX_ERROR, response["error"]));
         } else {
-            callback && callback(Bayeux.Error(BAYEUX_CLIENT_ERROR_TYPE.BAYEUX_ERROR,
+            callback && callback(Bayeux.Error(BC_ERROR_TYPE.BAYEUX_ERROR,
                 "Unsubscription failed, but response does not have \"error\" field!"));
         }
     }
@@ -676,7 +681,7 @@ class Bayeux.Client {
         if (!("successful" in response)) {
             local errMsg = "Response does not have \"successful\" field!";
             _logError(errMsg);
-            callback && callback(Bayeux.Error(BAYEUX_CLIENT_ERROR_TYPE.BAYEUX_ERROR, errMsg));
+            callback && callback(Bayeux.Error(BC_ERROR_TYPE.BAYEUX_ERROR, errMsg));
             return false;
         }
         return true;
@@ -684,7 +689,9 @@ class Bayeux.Client {
 
     function _increaseBackoff() {
         _backoff += _configuration.backoffIncrement;
-        _backoff = min(_backoff, _configuration.maxBackoff);
+        if (_backoff > _configuration.maxBackoff) {
+            _backoff = _configuration.maxBackoff;
+        }
     }
 
     function _resetBackoff() {
@@ -724,13 +731,13 @@ class Bayeux.Client {
         }
         if (_extraHttpRequest != null) {
             _extraHttpRequest[REQUEST_INDEX].cancel();
-            _extraHttpRequest[CALLBACK_INDEX](Bayeux.Error(BAYEUX_CLIENT_ERROR_TYPE.LIBRARY_ERROR, BAYEUX_CLIENT_LIBRARY_ERROR_NOT_CONNECTED));
+            _extraHttpRequest[CALLBACK_INDEX](Bayeux.Error(BC_ERROR_TYPE.LIBRARY_ERROR, BC_LIBRARY_ERROR_NOT_CONNECTED));
             _extraHttpRequest = null;
         }
 
         foreach (msgCb in _messageQueue) {
             // msgCb is an array [<message>, <callback>]
-            msgCb[CALLBACK_INDEX](Bayeux.Error(BAYEUX_CLIENT_ERROR_TYPE.LIBRARY_ERROR, BAYEUX_CLIENT_LIBRARY_ERROR_NOT_CONNECTED));
+            msgCb[CALLBACK_INDEX](Bayeux.Error(BC_ERROR_TYPE.LIBRARY_ERROR, BC_LIBRARY_ERROR_NOT_CONNECTED));
         }
 
         _curMsgId = 1;
@@ -833,7 +840,7 @@ class Bayeux.Client {
         local timeout = _configuration.requestTimeout;
         if (connect) {
             // _advice.timeout is in msec, so we need to convert it to sec
-            timeout += _advice.timeout / 1000;
+            timeout += _advice.timeout / 1000.0;
         }
 
         // TODO: Is it OK to set null as a streaming callback?
@@ -851,7 +858,7 @@ class Bayeux.Client {
         _logTable(response);
 
         if (!_statusIsOk(response.statuscode)) {
-            callback(Bayeux.Error(BAYEUX_CLIENT_ERROR_TYPE.TRANSPORT_FAILED, response.statuscode));
+            callback(Bayeux.Error(BC_ERROR_TYPE.TRANSPORT_FAILED, response.statuscode));
             return;
         }
 
@@ -873,7 +880,7 @@ class Bayeux.Client {
         } catch (e) {
             _logError("Response body is not a valid JSON: " + e);
             _logError("Message: " + response.body);
-            callback(Bayeux.Error(BAYEUX_CLIENT_ERROR_TYPE.BAYEUX_ERROR, "Response body is not a valid JSON: " + e));
+            callback(Bayeux.Error(BC_ERROR_TYPE.BAYEUX_ERROR, "Response body is not a valid JSON: " + e));
             return;
         }
 
