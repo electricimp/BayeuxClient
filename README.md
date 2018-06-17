@@ -5,6 +5,7 @@ This library implements the client side of [Bayeux protocol](https://docs.cometd
 This version of the library supports the following functionality:
 - Connect to Bayeux server
 - Subscribe to a channel (topic)
+- Receive server-to-client messages (events)
 - Unsubscribe from a channel (topic)
 - Disconnect from the server
 
@@ -65,6 +66,8 @@ These settings affect the client's behavior and the operations.
 | "requestTimeout" | Integer | Optional | 10 | The maximum number of seconds to wait before considering a request to the Bayeux server failed. |
 | "requestHeaders" | Table | Optional | 10 | A key-value table containing the request headers to be sent for every Bayeux request (for example, {"My-Custom-Header":"MyValue"}). |
 
+**Note**: please read the [Bayeux protocol specification](https://docs.cometd.org/current/reference/#_bayeux) to understand these parameters better.
+
 #### Example ####
 
 ```squirrel
@@ -97,22 +100,24 @@ This method makes a subscription to the specified topic (channel).
 
 All incoming messages with that topic are passed to the specified handler. If the subscription is already made this method just sets new handler for that subscription.
 
+The [subscribe()](#subscribetopic-handler-ondone) method can be called for different topics so the client can be subscribed to multiple topics. Any handler can be used for one or several subscriptions.
+
 The method returns nothing. A result of the operation may be obtained via the [*onDone*](#callback-ondoneerror) callback, if specified in this method.
 
 | Parameter | Data Type | Required? | Description |
 | --- | --- | --- | --- |
-| *topic* | String  | Yes | The topic to subscribe to. |
+| *topic* | String  | Yes | The topic to subscribe to. Valid topic (channel) should meet [this description](https://docs.cometd.org/current/reference/#_channels). |
 | *[handler](#callback-handlertopic-message)* | Function  | Yes | Callback called every time a message with the *topic* is received. |
 | *[onDone](#callback-ondoneerror)* | Function  | Optional | Callback called when the operation is completed or an error occurs. |
 
 #### Callback: handler(*topic, message*) ####
 
-This callback is called every time a message with the topic specified in the [subscribe()](#subscribetopic-handler-ondone) is received.
+This callback is called every time a message with the topic specified in the [subscribe()](#subscribetopic-handler-ondone) method is received.
 
 | Parameter | Data Type | Description |
 | --- | --- | --- |
 | *topic* | String | Topic id. |
-| *message* | Table | The message. |
+| *message* | Table | The data from received Bayeux message (event). [Described here](https://docs.cometd.org/current/reference/#_code_data_code). |
 
 #### Callback: onDone(*error*) #####
 
@@ -136,7 +141,7 @@ The method returns nothing. A result of the operation may be obtained via the [*
 
 | Parameter | Data Type | Required? | Description |
 | --- | --- | --- | --- |
-| *topic* | String  | Yes | The topic to unsubscribe from. |
+| *topic* | String  | Yes | The topic to unsubscribe from. Valid topic (channel) should meet [this description](https://docs.cometd.org/current/reference/#_channels). |
 | *[onDone](#callback-ondoneerror)* | Function  | Optional | Callback called when the operation is completed or an error occurs. |
 
 #### Callback: onDone(*error*) #####
@@ -183,7 +188,7 @@ An *Integer* error code which specifies a concrete LIBRARY error (if any) happen
 | 1 | The client is not connected. |
 | 2 | The client is already connected. |
 | 3 | The operation is not allowed now. E.g. the same operation is already in process. |
-| 4 | The client is not subscribed to the topic. E.g. it is impossible to unsubscribe from the topic the client is not subscribed to. (TODO - this error looks strange here. Could we use the previous code to throw this error?) |
+| 4 | The client is not subscribed to the topic. E.g. it is impossible to unsubscribe from the topic the client is not subscribed to. |
 
 ## Examples ##
 
