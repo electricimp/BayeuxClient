@@ -189,10 +189,10 @@ class SalesforceEventSender {
     function sendData() {
         local body = {};
         body[EVENT_FIELD_NAME] <- time().tostring();
-        
+
         // Log the data being sent to the cloud
         server.log("Event to send: " + http.jsonencode(body));
-        
+
         // Send Salesforce platform event
         _force.request("POST", _sendEventUrl, http.jsonencode(body), function (err, respData) {
             if (err) {

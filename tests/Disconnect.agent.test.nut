@@ -68,7 +68,7 @@ class DisconnectTestCase extends ImpTestCase {
                 if (err != null &&
                     err.type == BC_ERROR_TYPE.LIBRARY_ERROR &&
                     err.details == BC_LIBRARY_ERROR_NOT_CONNECTED) {
-                    msgCbCallCounter += 1;   
+                    msgCbCallCounter += 1;
                 }
             }.bindenv(this);
 

@@ -49,7 +49,7 @@ class DummyTestCase extends ImpTestCase {
         _bayeuxClient.subscribe(topic, handler);
         return Promise(function (resolve, reject) {
             _bayeuxClient.subscribe(topic, handler, function (err) {
-                if (err != null && 
+                if (err != null &&
                     err.type == BC_ERROR_TYPE.LIBRARY_ERROR &&
                     err.details == BC_LIBRARY_ERROR_NOT_CONNECTED) {
                     return resolve();
@@ -64,7 +64,7 @@ class DummyTestCase extends ImpTestCase {
         _bayeuxClient.unsubscribe(topic);
         return Promise(function (resolve, reject) {
             _bayeuxClient.unsubscribe(topic, function (err) {
-                if (err != null && 
+                if (err != null &&
                     err.type == BC_ERROR_TYPE.LIBRARY_ERROR &&
                     err.details == BC_LIBRARY_ERROR_NOT_CONNECTED) {
                     return resolve();

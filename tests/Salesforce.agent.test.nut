@@ -155,7 +155,7 @@ class SalesforceTestCase extends ImpTestCase {
     }
 
     function _getAccessInfo() {
-        local body = format("grant_type=password&client_id=%s&client_secret=%s&username=%s&password=%s", 
+        local body = format("grant_type=password&client_id=%s&client_secret=%s&username=%s&password=%s",
             SALESFORCE_TEST_CLIENT_ID, SALESFORCE_TEST_CLIENT_SECRET, SALESFORCE_TEST_USERNAME, SALESFORCE_TEST_PASSWORD);
         local req = http.post(SALESFORCE_TEST_ACCESS_TOKEN_URL, {}, body);
         local resp = req.sendsync();

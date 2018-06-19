@@ -188,7 +188,7 @@ class Bayeux.Client {
         if (_extraHttpRequest != null) {
             _extraHttpRequest[REQUEST_INDEX].cancel();
             _extraHttpRequest[CALLBACK_INDEX](Bayeux.Error(BC_ERROR_TYPE.LIBRARY_ERROR, BC_LIBRARY_ERROR_OP_NOT_ALLOWED_NOW));
-            _extraHttpRequest = null;   
+            _extraHttpRequest = null;
         }
         _send(message, sent);
     }
@@ -247,7 +247,7 @@ class Bayeux.Client {
         local sent = function(error) {
             if (error != null) {
                 if (msgId in _metaHandlers) {
-                    delete _metaHandlers[msgId];                
+                    delete _metaHandlers[msgId];
                 }
                 onDone && onDone(error);
             }
@@ -297,7 +297,7 @@ class Bayeux.Client {
         local sent = function(error) {
             if (error != null) {
                 if (msgId in _metaHandlers) {
-                    delete _metaHandlers[msgId];                
+                    delete _metaHandlers[msgId];
                 }
                 onDone && onDone(error);
             }
@@ -415,7 +415,7 @@ class Bayeux.Client {
         messages.clear();
         messages.extend(subscribes);
         messages.extend(others);
-        messages.extend(unsubscribes);        
+        messages.extend(unsubscribes);
     }
 
     function _onUserMessage(message) {
@@ -428,7 +428,7 @@ class Bayeux.Client {
         local builtChannel = null;
         // Example: 3 iterations
         foreach (part in channelParts) {
-            // Example: 
+            // Example:
             // 1-st iter: channelPart = "/a", channelLen = 1
             // 2-nd iter: channelPart = "/a/b", channelLen = 2
             // 3-rd iter: channelPart = "/a/b/c", channelLen = 3
@@ -444,7 +444,7 @@ class Bayeux.Client {
                 builtChannel = channelPart + "/*";
 
                 if (builtChannel in _userHandlers) {
-                    // TODO: User's handler can take a lot of time, so we can lose a connection due to timeout. 
+                    // TODO: User's handler can take a lot of time, so we can lose a connection due to timeout.
                     // Should we do imp.wakeup(0, ...) here to allow the lib firstly send "connect" message and only then call user's handler?
                     _userHandlers[builtChannel](message["channel"], message["data"]);
                 }
@@ -455,7 +455,7 @@ class Bayeux.Client {
             } else {
                 // Example: builtChannel = "/a/**"
                 builtChannel = channelPart + "/**";
-            }          
+            }
 
             if (builtChannel in _userHandlers) {
                 // TODO: Same as above (imp.wakeup)
@@ -487,13 +487,13 @@ class Bayeux.Client {
         local sent = function(error) {
             if (error != null) {
                 if (msgId in _metaHandlers) {
-                    delete _metaHandlers[msgId];                
+                    delete _metaHandlers[msgId];
                 }
                 callback(error);
             }
         }.bindenv(this);
 
-        // We can send it directly without the queue because it should be the first message 
+        // We can send it directly without the queue because it should be the first message
         // and the other messages are not allowed before the handshake
         _send(message, sent);
     }
@@ -555,7 +555,7 @@ class Bayeux.Client {
         local sent = function(error) {
             if (error != null) {
                 if (msgId in _metaHandlers) {
-                    delete _metaHandlers[msgId];                
+                    delete _metaHandlers[msgId];
                 }
                 if (establish) {
                     _onConnected(error);
@@ -596,7 +596,7 @@ class Bayeux.Client {
                 callback(null);
             }
             return;
-        } 
+        }
 
         local reconnectAdvice = null;
         if ("advice" in response && "reconnect" in response["advice"]) {
