@@ -37,24 +37,25 @@
 // - periodically (every 10 seconds) sends an event to the cloud. The event contains the current timestamp
 // - logs all events received from the cloud (exactly the events sent in the previous point)
 
+// NOTE: DON'T CREATE ANOTHER INSTANCE OF ROCKY
+rocky <- null;
+if ("Rocky" in getroottable()) {
+    rocky = Rocky();
+} else {
+    throw "Unmet dependency: SalesforceOAuth2 requires Rocky";
+}
+
 const SALESFORCE_VERSION = "v42.0";
 
 // Extends Salesforce Library to handle authorization
 class SalesforceOAuth2 extends Salesforce {
 
-    _login = null;
     _onLoggedInCallbacks = null;
 
     constructor(consumerKey, consumerSecret, loginServiceBase = null, salesforceVersion = SALESFORCE_VERSION) {
         _clientId = consumerKey;
         _clientSecret = consumerSecret;
         _onLoggedInCallbacks = [];
-
-        if ("Rocky" in getroottable()) {
-            _login = Rocky();
-        } else {
-            throw "Unmet dependency: SalesforceOAuth2 requires Rocky";
-        }
 
         if (loginServiceBase != null) _loginServiceBase = loginServiceBase;
         if (salesforceVersion != null) _version = salesforceVersion;
@@ -68,7 +69,7 @@ class SalesforceOAuth2 extends Salesforce {
 
     function defineLoginEndpoint() {
         // Define log in endpoint for a GET request to the agent URL
-        _login.get("/", function(context) {
+        rocky.get("/", function(context) {
 
             // Check if an OAuth code was passed in
             if (!("code" in context.req.query)) {
@@ -158,8 +159,8 @@ class SalesforceOAuth2 extends Salesforce {
     }
 }
 
-const EVENT_NAME = "testevent__e";
-const EVENT_FIELD_NAME = "mytimestamp__c";
+const EVENT_NAME = "Test_Event__e";
+const EVENT_FIELD_NAME = "My_Timestamp__c";
 // in seconds
 const SEND_INTERVAL = 10;
 
@@ -260,7 +261,7 @@ class SalesforceEventReceiver {
             }
         };
 
-        _bayeux.subscribe("/event/" + _eventName, eventHandler, onSubscribed);
+        _bayeux.subscribe("/event/" + _eventName, eventHandler.bindenv(this), onSubscribed.bindenv(this));
     }
 
     function onDisconnected(error) {

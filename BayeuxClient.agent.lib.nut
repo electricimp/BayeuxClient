@@ -43,8 +43,7 @@ class Bayeux {
 }
 
 class Bayeux.Client {
-    // TODO: Make disabled by default
-    _debugEnabled           = true;
+    _debugEnabled           = false;
 
     _isDisconnected         = true;
     _isDisconnecting        = false;
@@ -118,7 +117,7 @@ class Bayeux.Client {
         // Indexes
         const REQUEST_INDEX = 0;
         const CALLBACK_INDEX = 1;
-        const MESSAGE_INDEX = 1;
+        const MESSAGE_INDEX = 0;
 
         _configuration = {
             "requestHeaders" : {},
@@ -180,7 +179,6 @@ class Bayeux.Client {
         }
 
         local sent = function(error) {
-            // TODO: Should we pass an error to user? Anyway we consider we are disconnected
             _onDisconnected(null);
         }.bindenv(this);
 
@@ -349,6 +347,7 @@ class Bayeux.Client {
     function _init() {
         _cookies = {
             // TODO: We should get this cookie from Bayeux server
+            // Waiting for EI to fix the issue with Set-Cookie headers
             "BAYEUX_BROWSER" : "BAYEUX_BROWSER=" + imp.configparams.deviceid
         }
 
@@ -444,8 +443,6 @@ class Bayeux.Client {
                 builtChannel = channelPart + "/*";
 
                 if (builtChannel in _userHandlers) {
-                    // TODO: User's handler can take a lot of time, so we can lose a connection due to timeout.
-                    // Should we do imp.wakeup(0, ...) here to allow the lib firstly send "connect" message and only then call user's handler?
                     _userHandlers[builtChannel](message["channel"], message["data"]);
                 }
 
@@ -458,7 +455,6 @@ class Bayeux.Client {
             }
 
             if (builtChannel in _userHandlers) {
-                // TODO: Same as above (imp.wakeup)
                 _userHandlers[builtChannel](message["channel"], message["data"]);
             }
         }
@@ -793,7 +789,7 @@ class Bayeux.Client {
 
     function _processQueue() {
         // We have a free request
-        if (_extraHttpRequest == null && _messageQueue.len() > 0) {
+        if (!_isDisconnecting && _extraHttpRequest == null && _messageQueue.len() > 0) {
             // msgCb is an array [<message>, <callback>]
             local msgCb = _messageQueue.remove(0);
             _send([msgCb[MESSAGE_INDEX]], msgCb[CALLBACK_INDEX]);
@@ -843,7 +839,6 @@ class Bayeux.Client {
             timeout += _advice.timeout / 1000.0;
         }
 
-        // TODO: Is it OK to set null as a streaming callback?
         httpRequest.sendasync(sent, null, timeout);
     }
 
@@ -859,10 +854,12 @@ class Bayeux.Client {
 
         if (!_statusIsOk(response.statuscode)) {
             callback(Bayeux.Error(BC_ERROR_TYPE.TRANSPORT_FAILED, response.statuscode));
+            _processQueue();
             return;
         }
 
         // TODO: Handle the cookies properly
+        // Waiting for EI to fix the issue with Set-Cookie headers
         foreach (k, v in response.headers) {
             if (k.tolower() == "set-cookie") {
                 try {
@@ -881,6 +878,7 @@ class Bayeux.Client {
             _logError("Response body is not a valid JSON: " + e);
             _logError("Message: " + response.body);
             callback(Bayeux.Error(BC_ERROR_TYPE.BAYEUX_ERROR, "Response body is not a valid JSON: " + e));
+            _processQueue();
             return;
         }
 
@@ -889,9 +887,7 @@ class Bayeux.Client {
             _handleMessages(tableMsg);
         }
 
-        if (!_isDisconnecting) {
-            _processQueue();
-        }
+        _processQueue();
     }
 
     // Check HTTP status
