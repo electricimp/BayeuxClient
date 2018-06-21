@@ -201,12 +201,12 @@ class Bayeux.Client {
     // Makes a subscription to the specified topic (channel).
     //
     // Parameters:
-    //     topic : String               The topic to subscribe to.
+    //     topic : String               The topic to subscribe to. Valid topic (channel) should meet the Bayeux protocol description.
     //     handler : Function           Callback called every time a message with the topic is received.
     //                                  The callback signature:
     //                                  handler(topic, message), where
     //                                      topic : String      Topic id.
-    //                                      message : Table     The message.
+    //                                      message : Table     The data from received Bayeux message (event).
     //     onDone : Function            Callback called when the operation is completed or an error occurs.
     //          (optional)              The callback signature:
     //                                  onDone(error), where
