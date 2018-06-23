@@ -71,7 +71,37 @@ These settings affect the client's behavior and the operations.
 #### Example ####
 
 ```squirrel
-TODO
+function onConnected(error) {
+    if (error != null) {
+        server.error("Сonnection failed");
+        server.error(format("Error type: %d, details: %s", error.type, error.details.tostring()));
+        return;
+    }
+    server.log("Connected!");
+    // Here is a good place to make required subscriptions
+}
+
+function onDisconnected(error) {
+    if (error != null) {
+        server.error("Disconnected unexpectedly with error:");
+        server.error(format("Error type: %d, details: %s", error.type, error.details.tostring()));
+        // Reconnect if disconnection is not initiated by application
+        client.connect();
+    } else {
+        server.log("Disconnected by application");
+    }
+}
+
+config <- {
+    "url" : "yourBayeuxServer.com",
+    "requestHeaders": {
+        "Authorization" : "<Your authorization header if needed>"
+    }
+};
+
+// Instantiate and connect a client
+client <- Bayeux.Client(config, onConnected, onDisconnected);
+client.connect();
 ```
 
 ### connect() ###
@@ -130,7 +160,20 @@ This callback is called when a method is completed.
 #### Example ####
 
 ```squirrel
-TODO
+function handler(topic, msg) {
+    server.log(format("Event received from %s channel: %s", topic, http.jsonencode(msg)));
+}
+
+function onDone(error) {
+    if (error != null) {
+        server.error("Subscribing failed:");
+        server.error(format("Error type: %d, details: %s", error.type, error.details.tostring()));
+    } else {
+        server.log("Successfully subscribed");
+    }
+}
+
+client.subscribe("/example/topic", handler, onDone);
 ```
 
 ### unsubscribe(*topic[, onDone]*) ###
@@ -155,7 +198,16 @@ This callback is called when a method is completed.
 #### Example ####
 
 ```squirrel
-TODO
+function onDone(error) {
+    if (error != null) {
+        server.error("Unsubscribing failed:");
+        server.error(format("Error type: %d, details: %s", error.type, error.details.tostring()));
+    } else {
+        server.log("Successfully unsubscribed");
+    }
+}
+
+client.unsubscribe("/example/topic", onDone);
 ```
 
 ### setOnConnected(*callback*) ###
