@@ -113,3 +113,4 @@ In the **Custom Fields & Relationships** section, click **New** to create the fi
 1. Make sure there are periodic logs like this:
 ![Make sure there are periodic logs like this](images/PeriodicLogs.png "Make sure there are periodic logs like this")
 1. Your application is now up and running.
+1. You may check that the value of the **My_Timestamp__c** field in the received event is equal to the value in the sent event.
