@@ -4,7 +4,7 @@ The tests in the current directory are intended to check the behavior of the Bay
 
 They are written for and should be used with [impt](https://github.com/electricimp/imp-central-impt). See [impt Testing Guide](https://github.com/electricimp/imp-central-impt/blob/master/TestingGuide.md) for the details of how to configure and run the tests.
 
-The [Salesforce.agent.test.nut](./Salesforce.agent.test.nut) test for BayeuxClient library uses Salesforce platform and requires pre-setup described below. The Salesforce platform is used for testing purposes due to absence of any public Bayeux servers appropriate for testing.
+The [Salesforce.agent.test.nut](./Salesforce.agent.test.nut) test for BayeuxClient library uses Salesforce platform and requires pre-setup described below. The Salesforce platform is used for testing purposes due to the absence of any public Bayeux servers appropriate for testing.
 
 The other tests can be [run](#run-tests) without any pre-setup.
 
