@@ -48,7 +48,7 @@ The client is considered as disconnected if any of these events occurs:
 
 To learn what "connect" message is, please read the [Bayeux protocol specification](https://docs.cometd.org/current/reference/#_bayeux).
 
-This is a good place to call the [connect()](#connect) method again, if it was an unexpected disconnection.
+This is a good place to call the [connect()](#connect) method again if it was an unexpected disconnection.
 
 | Parameter | Data Type | Description |
 | --- | --- | --- |
@@ -132,7 +132,7 @@ All incoming messages with that topic are passed to the specified handler. If th
 
 The [subscribe()](#subscribetopic-handler-ondone) method can be called for different topics so the client can be subscribed to multiple topics. Any handler can be used for one or several subscriptions.
 
-The method returns nothing. A result of the operation may be obtained via the [*onDone*](#callback-ondoneerror) callback, if specified in this method.
+The method returns nothing. A result of the operation may be obtained via the [*onDone*](#callback-ondoneerror) callback if specified in this method.
 
 | Parameter | Data Type | Required? | Description |
 | --- | --- | --- | --- |
@@ -180,7 +180,7 @@ client.subscribe("/example/topic", handler, onDone);
 
 This method unsubscribes from the specified topic.
 
-The method returns nothing. A result of the operation may be obtained via the [*onDone*](#callback-ondoneerror) callback, if specified in this method.
+The method returns nothing. A result of the operation may be obtained via the [*onDone*](#callback-ondoneerror) callback if specified in this method.
 
 | Parameter | Data Type | Required? | Description |
 | --- | --- | --- | --- |
@@ -226,9 +226,9 @@ This method enables (*value* is `true`) or disables (*value* is `false`) the cli
 
 This class represents an error returned by the library and has the following public properties:
 - *type* &mdash; The error type, which is one of the following *BAYEUX_CLIENT_ERROR_TYPE* enum values:
-    - *LIBRARY_ERROR* &mdash; The library is wrongly initialized, a method is called when it is not allowed, or an internal error has occurred. The [error code](#library-error-codes) can be found in the *details* property. Usually this indicates an issue during application development which should be fixed during debugging and therefore should not occur after the application has been deployed.
+    - *LIBRARY_ERROR* &mdash; The library is wrongly initialized, a method is called when it is not allowed, or an internal error has occurred. The [error code](#library-error-codes) can be found in the *details* property. Usually, this indicates an issue during application development which should be fixed during debugging and therefore should not occur after the application has been deployed.
     - *TRANSPORT_FAILED* &mdash; An HTTP request to the Bayeux server failed. The error code can be found in the *details* property. This is the code returned by [Imp's HTTP API](https://developer.electricimp.com/api/httprequest/sendasync). This error may occur during the normal execution of an application. The application logic should process this error.
-   - *BAYEUX_ERROR* &mdash; An unexpected response from the Bayeux server or simply unsuccessful Bayeux operation. The error description can be found in the *details* property. It may contain a description provided by the Bayeux server. Generally it is a human readable string.
+   - *BAYEUX_ERROR* &mdash; An unexpected response from the Bayeux server or simply unsuccessful Bayeux operation. The error description can be found in the *details* property. It may contain a description provided by the Bayeux server. Generally, it is a human-readable string.
 - *details* &mdash; An integer error code or a string containing a description of the error.
 
 ### Library Error Codes ###
