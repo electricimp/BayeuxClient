@@ -18,8 +18,8 @@ Source code: [Salesforce.agent.nut](./Salesforce.agent.nut)
 
 ### Login To Salesforce ###
 
-Login to [Salesforce Developer Edition org](https://developer.salesforce.com/signup).
-If you are not registered, create a developer account.
+Login to [Salesforce Developer Edition org](https://login.salesforce.com/).
+If you are not registered as a developer, [create a developer's account](https://developer.salesforce.com/signup).
 
 ### Set Up Imp Device ###
 
