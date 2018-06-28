@@ -71,6 +71,8 @@ These settings affect the client's behavior and the operations.
 #### Example ####
 
 ```squirrel
+#require "BayeuxClient.agent.lib.nut:1.0.0"
+
 function onConnected(error) {
     if (error != null) {
         server.error("Сonnection failed");
@@ -235,12 +237,12 @@ This class represents an error returned by the library and has the following pub
 
 An *Integer* error code which specifies a concrete LIBRARY error (if any) happened during an operation.
 
-| Error Code | Description |
-| --- | --- |
-| 1 | The client is not connected. |
-| 2 | The client is already connected. |
-| 3 | The operation is not allowed now. E.g. the same operation is already in process. |
-| 4 | The client is not subscribed to the topic. E.g. it is impossible to unsubscribe from the topic the client is not subscribed to. |
+| Error Code | Error Name | Description |
+| --- | --- | --- |
+| 1 | BC_LIBRARY_ERROR_NOT_CONNECTED | The client is not connected. |
+| 2 | BC_LIBRARY_ERROR_ALREADY_CONNECTED | The client is already connected. |
+| 3 | BC_LIBRARY_ERROR_OP_NOT_ALLOWED_NOW | The operation is not allowed now. E.g. the same operation is already in process. |
+| 4 | BC_LIBRARY_ERROR_NOT_SUBSCRIBED | The client is not subscribed to the topic. E.g. it is impossible to unsubscribe from the topic the client is not subscribed to. |
 
 ## Examples ##
 
