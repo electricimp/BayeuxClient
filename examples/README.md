@@ -62,6 +62,8 @@ This stage is used to authenticate the imp application in Salesforce.
 ![Make a note of your Salesforce connected app Consumer Secret and Consumer Key](images/Credentials.png "Make a note of your Salesforce connected app Consumer Secret and Consumer Key")
 1. Do not close the Salesforce page.
 
+**Note:** any Salesforce Connected Application works only for the one agent the URL of which you entered in the OAuth Settings section.
+
 ### Create Platform Event in Salesforce ###
 
 Platform Events transfer the data from the device to Salesforce.
