@@ -31,7 +31,7 @@ The value should look like `3MVG9mIli7ewofGtFMOuXXXXXXXX4ylsz6cdDZ4kjtqwZn256uEh
 The value should look like `34956xxxxx2882569`.
 - Set *SALESFORCE_TEST_USERNAME* environment variable to the value of your **Username** obtained earlier.\
 The value should look like `aaa@bbb.ccc`.
-- Set *SALESFORCE_TEST_PASSWORD* environment variable to the value of your **Salesforce Password** concatenated with **Security token** obtained earlier.\
+- Set *SALESFORCE_TEST_PASSWORD* environment variable to the value of your **Salesforce Password** **CONCATENATED** with **Security token** obtained earlier.\
 The value should look like `yourpasswordXXXXXXSECURITYTOKENXXXXXX`.
 - For integration with [Travis](https://travis-ci.org) set *EI_LOGIN_KEY* environment variable to the valid impCentral login key.
 
