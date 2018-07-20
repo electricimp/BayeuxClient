@@ -345,12 +345,7 @@ class Bayeux.Client {
     // -------------------- PRIVATE METHODS -------------------- //
 
     function _init() {
-        _cookies = {
-            // TODO: We should get this cookie from Bayeux server
-            // Waiting for EI to fix the issue with Set-Cookie headers
-            "BAYEUX_BROWSER" : "BAYEUX_BROWSER=" + imp.configparams.deviceid
-        }
-
+        _cookies = {};
         _advice = {
             "timeout" : DEFAULT_ADVICE_TIMEOUT * 1000,
             "interval" : DEFAULT_ADVICE_INTERVAL * 1000
@@ -809,7 +804,7 @@ class Bayeux.Client {
             if (!("Cookie" in headers)) {
                 headers["Cookie"] <- "";
             }
-            headers["Cookie"] += cookie + "; ";
+            headers["Cookie"] += name + "=" + cookie + "; ";
         }
 
         local jsonMsg = null;
@@ -858,13 +853,15 @@ class Bayeux.Client {
             return;
         }
 
-        // TODO: Handle the cookies properly
-        // Waiting for EI to fix the issue with Set-Cookie headers
-        foreach (k, v in response.headers) {
-            if (k.tolower() == "set-cookie") {
+        foreach (header in response.rawheaders) {
+            if (header.k.tolower() == "set-cookie") {
                 try {
-                    local cookieName = split(v, "=")[0];
-                    _cookies[cookieName] <- v;
+                    // Cookie's value should be between the first "=" and the first ";"
+                    local startIdx = header.v.find("=");
+                    local endIdx = header.v.find(";");
+                    local value = header.v.slice(startIdx + 1, endIdx);
+                    local cookieName = header.v.slice(0, startIdx);
+                    _cookies[cookieName] <- value;
                 } catch(e) {
                     _logError(e);
                 }
