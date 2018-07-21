@@ -244,6 +244,11 @@ An *Integer* error code which specifies a concrete LIBRARY error (if any) happen
 | 3 | BC_LIBRARY_ERROR_OP_NOT_ALLOWED_NOW | The operation is not allowed now. E.g. the same operation is already in process. |
 | 4 | BC_LIBRARY_ERROR_NOT_SUBSCRIBED | The client is not subscribed to the topic. E.g. it is impossible to unsubscribe from the topic the client is not subscribed to. |
 
+## Cookies ##
+
+Cookie handling support is limited: all cookie's attributes are ignored.
+The library has only been tested with [Salesforce platform](https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_subscribe_cometd.htm).
+
 ## Examples ##
 
 Working examples are provided in the [examples](./examples) directory and described [here](./examples/README.md).

@@ -853,20 +853,7 @@ class Bayeux.Client {
             return;
         }
 
-        foreach (header in response.rawheaders) {
-            if (header.k.tolower() == "set-cookie") {
-                try {
-                    // Cookie's value should be between the first "=" and the first ";"
-                    local startIdx = header.v.find("=");
-                    local endIdx = header.v.find(";");
-                    local value = header.v.slice(startIdx + 1, endIdx);
-                    local cookieName = header.v.slice(0, startIdx);
-                    _cookies[cookieName] <- value;
-                } catch(e) {
-                    _logError(e);
-                }
-            }
-        }
+        _updateCookies(response.rawheaders);
 
         local tableMsg = null;
         try {
@@ -885,6 +872,44 @@ class Bayeux.Client {
         }
 
         _processQueue();
+    }
+
+    function _updateCookies(headers) {
+        // Cookie handling support is limited: all cookie's attributes are ignored
+        // The library has only been tested with Salesforce platform
+        foreach (header in headers) {
+            if (header.k.tolower() == "set-cookie") {
+                try {
+                    // Cookie's value should be between the first "=" and the first ";" if exists
+                    // One "set-cookie" header contains only one cookie name-value-pair
+                    // Leading and trailing whitespaces are forbidden in the cookie name and value
+                    // but RFC 6265 suggests to consider this case for servers that do not follow the recommendations
+                    local startIdx = header.v.find("=");
+                    local endIdx = header.v.find(";");
+                    local value = null;
+                    local cookieName = null;
+
+                    if (startIdx == null) {
+                        continue;
+                    }
+
+                    cookieName = strip(header.v.slice(0, startIdx));
+                    if (cookieName == "") {
+                        continue;
+                    }
+
+                    if (endIdx == null) {
+                        value = strip(header.v.slice(startIdx + 1, header.v.len()));
+                    } else {
+                        value = strip(header.v.slice(startIdx + 1, endIdx));
+                    }
+
+                    _cookies[cookieName] <- value;
+                } catch(e) {
+                    _logError(e);
+                }
+            }
+        }
     }
 
     // Check HTTP status
