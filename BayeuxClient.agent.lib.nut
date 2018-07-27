@@ -877,6 +877,7 @@ class Bayeux.Client {
     function _updateCookies(headers) {
         // Cookie handling support is limited: all cookie's attributes are ignored
         // The library has only been tested with Salesforce platform
+        // TODO: Clean the _cookies table in case of overflow
         foreach (header in headers) {
             if (header.k.tolower() == "set-cookie") {
                 try {
@@ -899,10 +900,10 @@ class Bayeux.Client {
                     }
 
                     if (endIdx == null) {
-                        value = strip(header.v.slice(startIdx + 1, header.v.len()));
-                    } else {
-                        value = strip(header.v.slice(startIdx + 1, endIdx));
+                        endIdx = header.v.len();
                     }
+
+                    value = strip(header.v.slice(startIdx + 1, endIdx));
 
                     _cookies[cookieName] <- value;
                 } catch(e) {

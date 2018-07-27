@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 
 // Utility Libraries
-#require "Rocky.class.nut:1.2.3"
+#require "Rocky.class.nut:2.0.1"
 
 // Web Integration Library
 #require "Salesforce.agent.lib.nut:2.0.0"
