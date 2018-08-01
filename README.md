@@ -25,9 +25,9 @@ This method returns a new Bayeux.Client instance.
 
 | Parameter | Data Type | Required? | Description |
 | --- | --- | --- | --- |
-| [*configuration*](#configuration) | Table | Yes | Key-value table with settings. There are both required and optional settings *(see below)* |
-| [*onConnected*](#callback-onconnectederror) | Function | No | Callback called every time the client is connected |
-| [*onDisconnected*](#callback-ondisconnectedreason) | Function | No | Callback called every time the client is disconnected |
+| [*configuration*](#configuration-values) | Table | Yes | Key-value table with settings. There are both required and optional settings *(see below)* |
+| [*onConnected*](#callback-onconnected) | Function | No | Callback called every time the client is connected |
+| [*onDisconnected*](#callback-ondisconnected) | Function | No | Callback called every time the client is disconnected |
 
 #### Return Value ####
 
@@ -114,13 +114,13 @@ client.connect();
 
 ### connect() ###
 
-This method negotiates a connection to the Bayeux server specified in the client [configuration](#configuration).
+This method negotiates a connection to the Bayeux server specified in the client [configuration](#configuration-values).
 
 Connection negotiation includes a handshake and the first *connect* message. To learn what handshake and *connect* messages are, please see the [Bayeux protocol specification](https://docs.cometd.org/current/reference/#_bayeux).
 
 #### Return Value ####
 
-Nothing. The result of the operation may be obtained via the [*onConnected*](#callback-onconnectederror) callback specified in the client's constructor or set by calling [*setOnConnected()*](#setonconnectedcallback).
+Nothing. The result of the operation may be obtained via the [*onConnected*](#callback-onconnected) callback specified in the client's constructor or set by calling [*setOnConnected()*](#setonconnectedcallback).
 
 ### disconnect() ###
 
@@ -128,7 +128,7 @@ This method closes the connection to the Bayeux server. Does nothing if the conn
 
 #### Return Value ####
 
-Nothing. When the disconnection is completed, the [*onDisconnected*](#callback-ondisconnectedreason) callback is called *(see above)*, if specified in the client's constructor or set by calling [*setOnDisconnected()*](#setondisconnectedcallback).
+Nothing. When the disconnection is completed, the [*onDisconnected*](#callback-ondisconnected) callback is called *(see above)*, if specified in the client's constructor or set by calling [*setOnDisconnected()*](#setondisconnectedcallback).
 
 ### isConnected() ###
 
@@ -151,8 +151,8 @@ All incoming messages within that topic are passed to the specified handler func
 | Parameter | Type | Required? | Description |
 | --- | --- | --- | --- |
 | *topic* | String  | Yes | The topic to subscribe to. Valid topics should meet [this description](https://docs.cometd.org/current/reference/#_channels) |
-| [*handler*](#callback-handlertopic-message) | Function  | Yes | Function called every time a message within the *topic* is received |
-| [*onDone*](#callback-ondoneerror) | Function  | No | Callback called when the operation is completed or an error occurs |
+| *handler* | Function  | Yes | Function called every time a message within the *topic* is received |
+| *onDone* | Function  | No | Callback called when the operation is completed or an error occurs |
 
 #### Callback: handler ####
 
@@ -173,7 +173,7 @@ This callback is called when the method completes. It has one parameter of its o
 
 #### Return Value ####
 
-Nothing. A result of the operation may be obtained via the [*onDone*](#callback-ondoneerror) callback if specified.
+Nothing. A result of the operation may be obtained via the *onDone* callback if specified.
 
 #### Example ####
 
@@ -203,7 +203,7 @@ This method unsubscribes from the specified topic.
 | Parameter | Data Type | Required? | Description |
 | --- | --- | --- | --- |
 | *topic* | String  | Yes | The topic to unsubscribe from. A valid topic (channel) should meet [this description](https://docs.cometd.org/current/reference/#_channels) |
-| [*onDone*](#callback-ondoneerror) | Function  | No | Function called when the operation is completed or an error occurs |
+| *onDone* | Function  | No | Function called when the operation is completed or an error occurs |
 
 #### Callback: onDone #####
 
@@ -215,7 +215,7 @@ This callback is called when a method is completed. It has one parameter of its 
 
 #### Return Value ####
 
-Nothing. A result of the operation may be obtained via the [*onDone*](#callback-ondoneerror) callback if specified.
+Nothing. A result of the operation may be obtained via the *onDone* callback if specified.
 
 #### Example ####
 
@@ -234,17 +234,17 @@ client.unsubscribe("/example/topic", onDone);
 
 ### setOnConnected(*callback*) ###
 
-This method can be used to set the client’s [*onConnected*](#callback-onconnectederror) callback. It returns nothing.
+This method can be used to set the client’s [*onConnected*](#callback-onconnected) callback. It returns nothing.
 
 ### setOnDisconnected(*callback*) ###
 
-This method can be used to set the client’s [*onDisconnected*](#callback-ondisconnectedreason) callback. It returns nothing.
+This method can be used to set the client’s [*onDisconnected*](#callback-ondisconnected) callback. It returns nothing.
 
 ### setDebug(*value*) ###
 
 This method enables (*value* is `true`) or disables (*value* is `false`) the client’s debug output, including error logging. It is disabled by default. The method returns nothing.
 
-## Bayeux.Error Class Usage ##
+## Bayeux.Error Class ##
 
 This class represents an error returned by the library and has the following public properties:
 
