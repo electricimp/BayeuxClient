@@ -271,11 +271,11 @@ Cookie handling support is limited: all cookie attributes are ignored. The libra
 
 ## Examples ##
 
-Working examples are provided in the [examples](./examples) directory and described [here](./examples/README.md).
+Working examples are provided in the [examples](./examples) directory.
 
 ## Testing ##
 
-Tests for the library are provided in the [tests](./tests) directory and described [here](./tests/README.md).
+Tests for the library are provided in the [tests](./tests) directory.
 
 ## License ##
 
