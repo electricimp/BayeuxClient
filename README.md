@@ -55,7 +55,7 @@ The callback has one parameter of its own:
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| *error* | [Bayeux.Error](#bayeuxerror-class) | This will be `null` if the connection is successful, otherwise an error message string |
+| *error* | [Bayeux.Error](#bayeuxerror-class) | `null` if the disconnect is expected and is caused by the [disconnect()](#disconnect) method called by user, or the string description of the error otherwise |
 
 #### Callback: onDisconnected ####
 
@@ -102,7 +102,7 @@ function onDisconnected(error) {
 }
 
 config <- { "url" : "yourBayeuxServer.com",
-            "requestHeaders": { "Authorization" : "YOUR_UTHORIZATION_HEADER"}
+            "requestHeaders": { "Authorization" : "YOUR_AUTHORIZATION_HEADER"}
 };
 
 // Instantiate and connect a client
