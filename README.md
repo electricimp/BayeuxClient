@@ -15,7 +15,7 @@ The library currently supports only long-polling transport.
 
 **To add this library to your project, add** `#require "BayeuxClient.agent.lib.nut:1.0.0"` **to the top of your agent code**
 
-## Example ## 
+## Examples ## 
 
 A complete, step-by-step recipe can be found in the [examples](./examples) folder.
 
@@ -272,10 +272,6 @@ An *Integer* error code which specifies a concrete library error which occurred 
 ## Cookies ##
 
 Cookie handling support is limited: all cookie attributes are ignored. The library has only been tested with the [Salesforce platform](https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_subscribe_cometd.htm).
-
-## Examples ##
-
-Working examples are provided in the [examples](./examples) directory.
 
 ## Testing ##
 
