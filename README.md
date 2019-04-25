@@ -15,6 +15,8 @@ The library currently supports only long-polling transport.
 
 **To add this library to your project, add** `#require "BayeuxClient.agent.lib.nut:1.0.0"` **to the top of your agent code**
 
+![Build Status](https://cse-ci.electricimp.com/app/rest/builds/buildType:(id:BayeuxClient_BuildAndTest)/statusIcon)
+
 ## Examples ## 
 
 A complete, step-by-step recipe can be found in the [examples](./examples) folder.
