@@ -421,9 +421,9 @@ class SalesforceApp {
             // Start sending data
             sendLoop();
             // Start Bayeux Client listener
-            local authData {
-                "instance_url" : _persist.getSFInstanceURL();
-                "access_token" : _persist.getSFToken();
+            local authData = {
+                "instance_url" : _persist.getSFInstanceURL(),
+                "access_token" : _persist.getSFToken()
             }
             _receiver.connect(authData);
         }
@@ -496,14 +496,14 @@ class SalesforceApp.Sender {
 
     function createPingData() {
         local body = {
-            [EVENT_FIELDS.DEV_ID]     : _impDeviceId
+            [EVENT_FIELDS.DEV_ID] = _impDeviceId
         }
     }
 
     function createMsgData() {
         local body = {
-            [EVENT_FIELDS.TIME_STAMP] : formatTimestamp(),
-            [EVENT_FIELDS.DEV_ID]     : _impDeviceId
+            [EVENT_FIELDS.TIME_STAMP] = formatTimestamp(),
+            [EVENT_FIELDS.DEV_ID]     = _impDeviceId
         }
     }
 
