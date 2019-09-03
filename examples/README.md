@@ -1,25 +1,19 @@
-# Bayeux Client Examples #
+# Bayeux Client Salesforce Example #
 
-This document describes the example applications provided with the [BayeuxClient library](../README.md).
+This example uses the [Salesforce library](https://github.com/electricimp/Salesforce) for sending the events and the [BayeuxClient library](../README.md) for receiving them. The example illustrates the following: 
 
-## Salesforce Example ##
-
-This example
-
-- Authenticates the device on Salesforce platform using the [OAuth2 library](https://github.com/electricimp/OAuth-2.0) Device Flow and a Salesforce Connected Application's Consumer Key and Consumer Secret.
-- Subscribes to the events channel created on Salesforce during the setup.
-- Periodically (every ten seconds) sends an event to the cloud. The event contains the current timestamp.
+- Authenticating the device with Salesforce using the [OAuth2 library](https://github.com/electricimp/OAuth-2.0) Device Flow via a Salesforce Connected Application.
+- Subscribing to the events channel created during the Salesforce example setup.
+- Periodically (every ten seconds) sending an event to the Salesforce cloud. The event contains the current timestamp and the device id.
 - Logs all events received from the cloud (exactly the events sent in the previous point).
 
-This example uses the [Salesforce library](https://github.com/electricimp/Salesforce) for sending the events and the [BayeuxClient library](../README.md) for receiving them.
-
-### Source Code ###
+## Source Code ##
 
 [SalesforceOAuth2Example.agent.nut](./SalesforceOAuth2Example.agent.nut)
 
-### Example Setup ###
+## Electric Imp and Salesforce Configuration  ##
 
-#### Set Up An imp-enabled Device ####
+### Set Up An imp-enabled Device ###
 
 1. Add a development device to [your account](https://developer.electricimp.com/gettingstarted)
 1. In [Electric Imp's impCentral™](https://impcentral.electricimp.com) create new a Product and a Development Device Group.
@@ -27,13 +21,13 @@ This example uses the [Salesforce library](https://github.com/electricimp/Salesf
 1. Copy the [Salesforce example source code](./SalesforceOAuth2Example.agent.nut) and paste it into Device Group’s code editor as the agent code.
 1. Leave impCentral open in your browser &mdash; you will be returning to it later.
 
-#### Login To Salesforce ####
+### Login To Salesforce ###
 
 If you are not registered as a developer, [create a developer account](https://developer.salesforce.com/signup).
 
 Now login to [Salesforce Developer Edition org](https://login.salesforce.com/). 
 
-#### Create A Salesforce Connected Application ####
+### Create A Salesforce Connected Application ###
 
 This stage is used to authenticate the imp application in Salesforce.
 
@@ -66,7 +60,7 @@ This stage is used to authenticate the imp application in Salesforce.
 ![Make a note of your Salesforce connected app Consumer Secret and Consumer Key](images/Credentials.png "Make a note of your Salesforce connected app Consumer Secret and Consumer Key")
 1. **Do not close the Salesforce page**.
 
-#### Create A Platform Event In Salesforce ####
+### Create A Platform Event In Salesforce ###
 
 Platform Events transfer the data from the device to Salesforce.
 
@@ -107,6 +101,7 @@ The Platform Event fields must have the names and types mentioned here. If you c
             - *My Timestamp API Name* is **My_Timestamp__c** 
             - *Device Id API Name* is **Device_Id__c**
 
+## Run Example Application & Authenticate Device ##
 
 ### Add API Keys To Your Agent Code ###
 
@@ -115,9 +110,12 @@ The Platform Event fields must have the names and types mentioned here. If you c
 ![In impCentral, add your Salesforce connected app Consumer Secret and Consumer Key to the places provided in the agent code](images/SetConstantsNew.png "In impCentral, add your Salesforce connected app Consumer Secret and Consumer Key to the places provided in the agent code")
 1. Again, **do not close impCentral**.
 
-### Start The Electric Imp Application & Authenticate the Device ###
+### Start The Electric Imp Application ###
 
 1. In the impCentral code editor, click **Build and Force Restart** to syntax-check, compile and deploy the code.
+
+### Authenticate the Device ###
+
 1. In the log pane, you should see a `Authorization is pending. Please grant access` message. This example uses OAuth 2.0 Device Flow for authentication, and the agent url has been configured to launch a web page to help with device authentication.
     - Click the agent URL in impCentral:
 ![In impCentral, click Agent URL to launch authorization process](images/AuthLogs.png "In impCentral, click Agent URL to launch authorization process")
