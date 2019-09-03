@@ -36,6 +36,7 @@
 // - logs all events received from the cloud (exactly the events sent in the previous point)
 
 // PERSIST STORAGE CLASS 
+// Stores Salesforce auth, so agent restarts do not require re-authentication
 // ---------------------------------------------------------------------------------
 
 enum PERSIST_ERASE_SCOPE {
@@ -304,7 +305,7 @@ class SalesForceOAuth2Device {
 
 }
 
-// APPLICATION CLASS 
+// APPLICATION CLASSES
 // ---------------------------------------------------------------------------------
 
 const SALESFORCE_VERSION = "v42.0";
@@ -313,8 +314,8 @@ const SEND_INTERVAL_SEC  = 10;
 const EVENT_NAME         = "Test_Event__e";
 
 enum EVENT_FIELDS {
-    TIME_STAMP = "myTimestamp__c",
-    DEV_ID     = "deviceId__c"
+    TIME_STAMP = "My_Timestamp__c",
+    DEV_ID     = "Device_Id__c"
 }
 
 enum SF_ERROR_CODES {
@@ -356,6 +357,7 @@ class SalesforceApp {
     function sendLoop() {
         server.log("[SalesforceApp] Sending data to Salesforce...");
         local data = _sender.createMsgData();
+        server.log("[SalesforceApp] Data:" + http.jsonencode(data));
         _sender.sendData(data, onDataSent.bindenv(this));
     }
 
@@ -363,7 +365,7 @@ class SalesforceApp {
         if (err) {
             server.log("[SalesforceApp] Salesforce send error occurred: ");
             server.error(err);
-            if (respData != null) server.log(respData.body);
+            if (resp != null && "body" in resp) server.log(resp.body);
         } else {
             server.log("[SalesforceApp] Salesforce sent data successfully");
             imp.wakeup(SEND_INTERVAL_SEC, sendLoop.bindenv(this));
@@ -403,7 +405,8 @@ class SalesforceApp {
                         break;
                     default: 
                         server.log("[SalesforceApp] Salesforce send ping unexpected error occurred: ");
-                        ::error(resp.body);
+                        local body = ("body" in resp) ? resp.body : resp;
+                        server.error(http.jsonencode(body));
                 }
             } catch(e) {
                 server.log("[SalesforceApp] ping error unable to parse response: " + e);
@@ -417,7 +420,7 @@ class SalesforceApp {
             // Try to re-authorize
             triggerOAuthFlow();
         } else {
-            server.log("[SalesforceApp] Used stored token to authorize device with Salesforce, statuscode: " + resp.statuscode);
+            server.log("[SalesforceApp] Used stored token to authorize device with Salesforce");
             // Start sending data
             sendLoop();
             // Start Bayeux Client listener
@@ -495,13 +498,13 @@ class SalesforceApp.Sender {
     }
 
     function createPingData() {
-        local body = {
+        return {
             [EVENT_FIELDS.DEV_ID] = _impDeviceId
         }
     }
 
     function createMsgData() {
-        local body = {
+        return {
             [EVENT_FIELDS.TIME_STAMP] = formatTimestamp(),
             [EVENT_FIELDS.DEV_ID]     = _impDeviceId
         }
