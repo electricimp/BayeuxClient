@@ -1,4 +1,4 @@
-# BayeuxClient #
+# BayeuxClient 1.0.0 #
 
 This library implements the client side of the [Bayeux protocol](https://docs.cometd.org/current/reference/#_bayeux), allowing your agent code to interact with Bayeux servers.
 
@@ -17,7 +17,7 @@ The library currently supports only long-polling transport.
 
 ![Build Status](https://cse-ci.electricimp.com/app/rest/builds/buildType:(id:BayeuxClient_BuildAndTest)/statusIcon)
 
-## Examples ## 
+## Examples ##
 
 A complete, step-by-step recipe can be found in the [examples](./examples) folder.
 
@@ -281,4 +281,4 @@ Tests for the library are provided in the [tests](./tests) directory.
 
 ## License ##
 
-The BayeuxClient library is licensed under the [MIT License](./LICENSE)
+This library is licensed under the [MIT License](./LICENSE)
